@@ -15,7 +15,7 @@ T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Trans
 
 BlockChain ajouterBlock(BlockChain bc)
 {
-	BlockChain new = malloc(sizeof(Block));
+	BlockChain new = malloc(sizeof(T_Block));
 	if(bc == NULL) //Si le nouveau bloc créé est le premier, l'id = 0
 		new->idBlock = 0;
 	else
@@ -32,8 +32,7 @@ float totalTransactionEtudiantBlock(int idEtu, T_Block b)
 {
 	int somme = 0;
 	T_Transaction* tmp;
-	if(b == NULL)
-		return somme;
+
 	tmp = b.liste;
 	while(tmp != NULL){
 		if(tmp->idEtu == idEtu)
