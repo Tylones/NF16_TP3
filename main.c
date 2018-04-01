@@ -101,7 +101,7 @@ void _2(){
 		b = b->next;
 	}
 	if(b == NULL){
-		//do smth
+		//do something
 		return;
 	}
 	else{
