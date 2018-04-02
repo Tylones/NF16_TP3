@@ -10,8 +10,8 @@ T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Trans
 	new->idEtu = idEtu;
 	new->montant = montant;
 	strcpy(new->descr, descr);
-//new->descr = descr; il faut faire un strcpy, 
-//on peut pas faire d'affectation direct en C pour les char
+	//new->descr = descr; il faut faire un strcpy,
+	//on peut pas faire d'affectation direct en C pour les char
 	new->next = listeTransaction;
 	return new;
 }
@@ -58,7 +58,6 @@ float totalTransactionEtudiantBlock(int idEtu, T_Block b)
 
 float soldeEtudiant(int idEtu, BlockChain bc)
 {
-	int somme = 0;
 	if(bc == NULL) //Condition d'arrêt de la fonction récursive
 		return 0;
 	return (totalTransactionEtudiantBlock(idEtu, *bc) + soldeEtudiant(idEtu, bc->next)); // On additionne le total des transactions de ce bloc
@@ -70,8 +69,10 @@ float soldeEtudiant(int idEtu, BlockChain bc)
 
 void crediter(int idEtu, float montant, char *descr, BlockChain bc)
 {
-	if(bc == NULL || montant < 0)
-		return; //printf un message pour dire echec du traitement ? 
+	if(bc == NULL || montant < 0){
+		printf("Erreur : montant à créditer inférieur à 0");
+		return;
+	}
 	ajouterTransaction(idEtu,montant,descr,bc->liste);
 }
 
@@ -95,19 +96,23 @@ void consulter(int idEtu, BlockChain bc)
 
     int i = 0;
     T_Transaction *ptr_t = NULL;
-    while (i != 5)
+	while (i != 5 && bc != NULL)
     {
         printf("----------Historique des 5 dernieres transaction de l'etu n°%d----------\n", idEtu);
-        ptr_t = bc->liste_t;
-        if (ptr_t->id_etu == idEtu){
-            printf("id du bloc de la %deme transaction est : %d\n",i, bc->id_bloc);
-            printf("\tLa description de cette transaction est : %s", bc->liste_t->desc);
-            printf("\tLe montant de cette transaction est : %f", bc->liste_t->montant);
+		ptr_t = bc->liste;
+		if (ptr_t->idEtu == idEtu){
+			printf("id du bloc de la %deme transaction est : %d\n",i, bc->idBlock);
+			printf("\tLa description de cette transaction est : %s", bc->liste->descr);
+			printf("\tLe montant de cette transaction est : %f", bc->liste->montant);
 
             i++;
-            bc = bc->suivant;
+			bc = bc->next;
         }
     }
+
+	if(i < 5)
+		printf("L'étudiant à moins de 5 transactions"); //Afficher un message si l'étudiant à moins de 5 transactions ?
+
 }
 
 int transfert(int idSource, int idDestination, float montant, char *descr, BlockChain bc)

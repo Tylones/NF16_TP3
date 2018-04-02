@@ -1,7 +1,8 @@
 #ifndef TP3_H
 #define TP3_H
 #include <stdlib.h>
-
+#include <string.h>
+#include <stdio.h>
 
 
 typedef struct Transaction{
@@ -31,6 +32,7 @@ float soldeEtudiant(int idEtu, BlockChain bc);
 void crediter(int idEtu, float montant, char *descr, BlockChain bc);
 int payer(int idEtu, float montant, char *descr, BlockChain bc);
 int transfert(int idSource, int idDestination, float montant, char *descr, BlockChain bc);
+void consulter(int idEtu, BlockChain bc);
 
 
 #endif // TP3_H
