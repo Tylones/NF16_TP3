@@ -4,9 +4,14 @@
 T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Transaction *listeTransaction)
 {
 	T_Transaction* new = malloc(sizeof(T_Transaction));
+	//on verifie si le malloc a fonctionne
+	if (new == NULL)
+	    exit(EXIT_FAILURE);
 	new->idEtu = idEtu;
 	new->montant = montant;
-	new->descr = descr;
+	strcpy(new->descr, descr);
+//new->descr = descr; il faut faire un strcpy, 
+//on peut pas faire d'affectation direct en C pour les char
 	new->next = listeTransaction;
 	return new;
 }
@@ -16,12 +21,19 @@ T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Trans
 BlockChain ajouterBlock(BlockChain bc)
 {
 	BlockChain new = malloc(sizeof(T_Block));
-	if(bc == NULL) //Si le nouveau bloc créé est le premier, l'id = 0
+	if (new == NULL)
+	    exit(EXIT_FAILURE);
+	    
+	if(bc == NULL){ //Si le nouveau bloc créé est le premier, l'id = 0
 		new->idBlock = 0;
-	else
+		new->next = NULL;
+	}
+	else {
 		new->idBlock = bc->idBlock + 1;
+		new->next = bc;
+	}
 	new->liste = NULL;
-	new->next = bc;
+	
 	return new;
 }
 
@@ -59,7 +71,7 @@ float soldeEtudiant(int idEtu, BlockChain bc)
 void crediter(int idEtu, float montant, char *descr, BlockChain bc)
 {
 	if(bc == NULL || montant < 0)
-		return;
+		return; //printf un message pour dire echec du traitement ? 
 	ajouterTransaction(idEtu,montant,descr,bc->liste);
 }
 
@@ -77,7 +89,26 @@ int payer(int idEtu, float montant, char *descr, BlockChain bc)
 }
 
 
+void consulter(int idEtu, BlockChain bc)
+{
+    soldeEtudiant(idEtu, bc);
 
+    int i = 0;
+    T_Transaction *ptr_t = NULL;
+    while (i != 5)
+    {
+        printf("----------Historique des 5 dernieres transaction de l'etu n°%d----------\n", idEtu);
+        ptr_t = bc->liste_t;
+        if (ptr_t->id_etu == idEtu){
+            printf("id du bloc de la %deme transaction est : %d\n",i, bc->id_bloc);
+            printf("\tLa description de cette transaction est : %s", bc->liste_t->desc);
+            printf("\tLe montant de cette transaction est : %f", bc->liste_t->montant);
+
+            i++;
+            bc = bc->suivant;
+        }
+    }
+}
 
 int transfert(int idSource, int idDestination, float montant, char *descr, BlockChain bc)
 {
