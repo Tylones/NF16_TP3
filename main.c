@@ -1,9 +1,6 @@
 #include "tp3.h"
 #include "menu.h"
 
-BlockChain bc;
-
-
 
 
 
@@ -12,7 +9,13 @@ BlockChain bc;
 
 int main()
 {
+	time_t rawtime;
+  struct tm  timeinfo;
 
+  time (&rawtime);
+  timeinfo = *localtime (&rawtime);
+  printf ("Current local time and date: %s", asctime(&timeinfo));
+/*
 	int choix = -1;
 	while(choix != 0){
 		printf("Que voulez vous faire ?\n");
@@ -59,7 +62,7 @@ int main()
 			choix = 0;
 
 		}
-	}
+	}*/
 	return 0;
 }
 

@@ -4,6 +4,9 @@
 T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Transaction *listeTransaction)
 {
 	T_Transaction* new = malloc(sizeof(T_Transaction));
+
+
+
 	//on verifie si le malloc a fonctionne
 	if (new == NULL)
 	    exit(EXIT_FAILURE);
@@ -28,12 +31,17 @@ BlockChain ajouterBlock(BlockChain bc)
 	    exit(EXIT_FAILURE);
 	    
 	if(bc == NULL){ //Si le nouveau bloc créé est le premier, l'id = 0
+		time_t t;
+		time(&t);
 		new->idBlock = 0;
 		new->next = NULL;
+		new->date = *localtime(&t);
+
 	}
 	else {
 		new->idBlock = bc->idBlock + 1;
 		new->next = bc;
+		new->date = addinterval(bc->date,0,0,1);
 	}
 	new->liste = NULL;
 	
@@ -133,4 +141,34 @@ int transfert(int idSource, int idDestination, float montant, char *descr, Block
 		return 1;
 	}
 	return 0;
+}
+
+Date ajouterJour(Date d){
+	Date tmp;
+	tmp.jour = d.jour + 1;
+	if((d.mois == 2 && tmp.jour == 29)
+	   || ((d.mois == 1 || d.mois == 3 || d.mois == 5 || d.mois == 7 || d.mois == 8 || d.mois == 9 || d.mois == 12) && tmp.jour == 32)
+	   || ((d.mois == 2 || d.mois == 4 || d.mois == 6 ||  d.mois == 9 || d.mois == 11) && tmp.jour == 0) ){
+		tmp.jour = 1;
+		tmp.mois = d.mois + 1;
+	}
+	if(tmp.mois == 13){
+		tmp.mois = 1;
+		tmp.annee = d.annee + 1;
+	}
+
+	return tmp;
+}
+
+struct tm addinterval(struct tm x, int y, int m, int d) {
+	x.tm_year += y;
+	x.tm_mon += m;
+	x.tm_mday += d;
+	mktime(&x); /* normalize result */
+	return x;
+}
+
+int egalDate(Date d1, Date d2)
+{
+	return(d1.jour == d2.jour && d1.mois == d2.mois && d1.annee == d2.annee);
 }

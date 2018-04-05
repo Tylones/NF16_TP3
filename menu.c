@@ -1,5 +1,5 @@
 #include "menu.h"
-
+ /*
 void _1(){
 	BlockChain b = bc;
 	T_Transaction* tmp;
@@ -86,3 +86,4 @@ void _9(){
 void _10(){
 
 }
+*/
