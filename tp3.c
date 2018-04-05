@@ -9,6 +9,9 @@ T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Trans
 	    exit(EXIT_FAILURE);
 	new->idEtu = idEtu;
 	new->montant = montant;
+	new->descr = malloc(100*sizeof(char));
+	if(!new->descr)
+		exit(EXIT_FAILURE);
 	strcpy(new->descr, descr);
 	//new->descr = descr; il faut faire un strcpy,
 	//on peut pas faire d'affectation direct en C pour les char
@@ -73,7 +76,7 @@ void crediter(int idEtu, float montant, char *descr, BlockChain bc)
 		printf("Erreur : montant à créditer inférieur à 0");
 		return;
 	}
-	ajouterTransaction(idEtu,montant,descr,bc->liste);
+	bc->liste = ajouterTransaction(idEtu,montant,descr,bc->liste);
 }
 
 
@@ -82,8 +85,8 @@ int payer(int idEtu, float montant, char *descr, BlockChain bc)
 {
 	if(bc == NULL)
 		return 0;
-	if(soldeEtudiant(idEtu,bc) > montant * -1){ // Comme le montant à payer va être représenté par une valeur négative (e.g. : -3.25€), on le multiplie par -1 pour pouvoir le comparer au solde
-		ajouterTransaction(idEtu, montant, descr, bc->liste);
+	if(soldeEtudiant(idEtu,bc) > montant){ // Comme le montant à payer va être représenté par une valeur négative (e.g. : -3.25€), on le multiplie par -1 pour pouvoir le comparer au solde
+		bc->liste = ajouterTransaction(idEtu,montant,descr,bc->liste);
 		return 1;
 	}
 	return 0;
@@ -100,15 +103,21 @@ void consulter(int idEtu, BlockChain bc)
     {
         printf("----------Historique des 5 dernieres transaction de l'etu n°%d----------\n", idEtu);
 		ptr_t = bc->liste;
-		if (ptr_t->idEtu == idEtu){
-			printf("id du bloc de la %deme transaction est : %d\n",i, bc->idBlock);
-			printf("\tLa description de cette transaction est : %s", bc->liste->descr);
-			printf("\tLe montant de cette transaction est : %f", bc->liste->montant);
 
-            i++;
-			bc = bc->next;
-        }
-    }
+		while(ptr_t != NULL){
+			if (ptr_t->idEtu == idEtu){
+				printf("id du bloc de la %deme transaction est : %d\n",i, bc->idBlock);
+				printf("\tLa description de cette transaction est : %s", ptr_t->descr);
+				printf("\tLe montant de cette transaction est : %f", ptr_t->montant);
+				i++;
+			}
+
+			ptr_t = ptr_t->next;
+		}
+
+		bc = bc->next;
+	 }
+
 
 	if(i < 5)
 		printf("L'étudiant à moins de 5 transactions"); //Afficher un message si l'étudiant à moins de 5 transactions ?
@@ -119,9 +128,9 @@ int transfert(int idSource, int idDestination, float montant, char *descr, Block
 {
 	if(bc == NULL)
 		return 0;
-	if(montant > soldeEtudiant(idSource,bc))
-		return 0;
-	ajouterTransaction(idSource, montant * -1, descr, bc->liste); // On part du principe que le montant du transfert est positif, de ce fait, on le multiplie par -1 pour le débiter à la source
-	ajouterTransaction(idDestination, montant, descr, bc->liste);
-	return 1;
+	if(payer(idSource, montant, descr, bc) == 1){
+		crediter(idDestination, montant, descr, bc);
+		return 1;
+	}
+	return 0;
 }
