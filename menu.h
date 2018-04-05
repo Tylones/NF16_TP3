@@ -1,15 +1,15 @@
 #ifndef MENU_H
 #define MENU_H
+#include "tp3.h"
 
 
-void _1();
-void _2();
-void _3();
-void _4();
-void _5();
-void _6();
-void _7();
-void _9();
-void _10();
+int menu(void);
+int action(int choix, BlockChain bc);
+void afficherBlocs(BlockChain bc);
+void afficherTrans_bloc(BlockChain bc);
+void afficherTransEtu_jour(BlockChain bc);
+void credit(BlockChain bc);
+int paiement(BlockChain bc);
+int transferer(BlockChain bc);
 
 #endif // MENU_H
