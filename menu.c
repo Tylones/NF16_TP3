@@ -37,14 +37,18 @@ void menu(BlockChain bc)
             break;
 
             case 4:
+                if (bc == NULL)
+                {
+                    printf("\nLa BlockChain est vide.\n");
+                    return;
+                }
                 printf("Pour quel etudiant voulez-vous afficher son historique ? \n");
-                scanf("%d", idEtu);
+                scanf("%d", &idEtu);
                 consulter(idEtu, bc);
             break;
 
             case 5:
-                credit(bc);
-                //printf("id block : %d", bc->idBlock);
+                bc = credit(bc);
             break;
 
             case 6:
@@ -56,7 +60,6 @@ void menu(BlockChain bc)
             break;
 
             case 8:
-                printf("Exit. \n");
                 //on libere la memoire
                 while (bc != NULL)
                 {
@@ -72,6 +75,7 @@ void menu(BlockChain bc)
                     bc = tmpB;
                 }
                 bc = NULL;
+                printf("Vous avez quitte. \n");
             break;
 
             case 9:
@@ -97,14 +101,14 @@ void afficherBlocs(BlockChain bc)
 {
 	if (bc == NULL)
     {
-        printf("La BlockChain est vide.\n");
+        printf("\nLa BlockChain est vide.\n");
         return;
     }
 
 	BlockChain ptr = bc;
     printf("\n---Affichage de la liste des blocs que contient la BlockChain---\n");
 	while(ptr != NULL){
-		printf("Block numero : %d (le %d/%d/d) \n", ptr->idBlock, ptr->date->tm_mday, ptr->date->tm_mon, ptr->date->tm_year+1900);
+		printf("\nBlock numero : %d (le %d/%d/%d) \n", ptr->idBlock, ptr->date->tm_mday, ptr->date->tm_mon+1, ptr->date->tm_year+1900);
         ptr = ptr->next;
 
 	}
@@ -115,6 +119,13 @@ void afficherBlocs(BlockChain bc)
 void afficherTrans_bloc(BlockChain bc){
 	BlockChain b = bc;
 	int id;
+
+	if (bc == NULL)
+    {
+        printf("\nLa BlockChain est vide.\n");
+        return;
+    }
+
 	printf("Quel bloc voulez vous afficher (saisir id) ? \n");
 	scanf("%d",&id);
 
@@ -123,17 +134,17 @@ void afficherTrans_bloc(BlockChain bc){
 	}
 
 	if(b == NULL){
-		printf("Aucun bloc ne correspond a l'id saisi. \n");
+		printf("\nAucun bloc ne correspond a l'id saisi. \n");
 		return;
 	}
 	else{
+        printf("\n---Transactions du bloc %d---\n", bc->idBlock);
 		T_Transaction* tmp = b->liste;
 		while(tmp != NULL){
-			printf("Transaction : \n");
 			printf("	idEtu : %d \n", tmp->idEtu);
-			printf("	montant : %f \n", tmp->montant);
-			printf("	description : %s \n", tmp->descr);
-			printf("\n\n");
+			printf("	Montant : %.2f EATCoin\n", tmp->montant);
+			printf("	Description : %s \n\n", tmp->descr);
+
 			tmp = tmp->next;
 		}
 	}
@@ -142,23 +153,36 @@ void afficherTrans_bloc(BlockChain bc){
 
 void afficherTransEtu_jour(BlockChain bc){
 	int id;
+	int trouve = 0 ;
+
+	if (bc == NULL)
+    {
+        printf("\nLa BlockChain est vide.\n");
+        return;
+    }
+
 	T_Transaction* tmp = bc ->liste;
-	printf("Pour quel étudiant voulez vous afficher les transactions du jour ? \n");
+	printf("Veuillez saisir l'identifiant de l'etudiant : ");
 	scanf("%d",&id);
+    printf("\n--Transactions du %d/%d/%d de l'etudiant %d--- \n", bc->date->tm_mday,bc->date->tm_mon+1, bc->date->tm_year+1900,id);
 	while(tmp != NULL){
-		if(tmp->idEtu == id){
-			printf("Transaction : \n");
-			printf("	idEtu : %d \n", tmp->idEtu);
-			printf("	montant : %f \n", tmp->montant);
-			printf("	description : %s \n", tmp->descr);
-			printf("\n\n");
-		}
-		tmp = tmp->next;
+
+        if(tmp->idEtu == id){
+
+            //printf("	idEtu : %d \n", tmp->idEtu);
+            printf("	Description : %s \n", tmp->descr);
+            printf("	Montant : %.2f EATCoin \n\n", tmp->montant);
+            trouve = 1;
+        }
+
+        tmp = tmp->next;
 	}
+	if (trouve == 0)
+        printf("\nL'etudiant %d n'a pas fait de transaction aujourd'hui.\n", id);
 }
 
 //pour remplir la bc
-void credit(BlockChain bc)
+BlockChain credit(BlockChain bc)
 {
     time_t secondes;
     struct tm *instant;
@@ -173,8 +197,6 @@ void credit(BlockChain bc)
 
     if (bc == NULL || instant != bc->date){ //si bc est null OU si la date ne correspond pas a la date du bloc courant
         bc = ajouterBlock(bc);
-        printf("ici : Ok on est entre dans le if (bc null ou instant != bc->date) donc ajouterBlock a ete fait\n");
-        printf("id block apres l'ajout (on est dans credit de menu.c): %d\n", bc->idBlock);
     }
 
     printf("Veuillez saisir l'identifiant de l'etudiant : ");
@@ -185,22 +207,26 @@ void credit(BlockChain bc)
     //printf("id bloc avant crediter : %d", bc->idBlock);
     crediter(id, montant, "Credit", bc);
 
-    printf("Le compte a ete recharge. \n\n");
+
+    return bc;
+
 
 }
 
-int paiement(BlockChain bc)
+void paiement(BlockChain bc)
 {
-    int id;
+    int id, result;
     float montant;
-    char *descr;
-    printf("Veuillez saisir l'identifiant de l'etudiant.\n");
+    char *descr = malloc(strlen(descr)*sizeof(char));
+    printf("\n---Achat repas---\n");
+    printf("Veuillez saisir l'identifiant de l'etudiant : ");
     scanf("%d", &id);
-    printf("Veuillez saisir le montant a payer.\n");
+    printf("Veuillez saisir le montant a payer : ");
     scanf("%f", &montant);
-    printf("Veuillez saisir une description.\n");
+    printf("Veuillez saisir le repas : ");
     scanf("%s", descr);
-    payer(id,montant,descr,bc);
+    //printf("ici");
+    result = payer(id,montant,descr,bc);
 }
 
 int transferer(BlockChain bc)
