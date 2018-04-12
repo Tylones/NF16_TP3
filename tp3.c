@@ -9,8 +9,8 @@ T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Trans
 	    exit(EXIT_FAILURE);
 	new->idEtu = idEtu;
 	new->montant = montant;
-	new->descr = malloc(100*sizeof(char));
-	if(!new->descr)
+	new->descr = malloc(strlen(descr)*sizeof(char));
+	if(new->descr==NULL)
 		exit(EXIT_FAILURE);
 	strcpy(new->descr, descr);
 	//new->descr = descr; il faut faire un strcpy,
@@ -23,10 +23,15 @@ T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Trans
 
 BlockChain ajouterBlock(BlockChain bc)
 {
+    //--------------A AJOUTER : date--------------
 	BlockChain new = malloc(sizeof(T_Block));
+
+	struct tm *instant;
+	time_t secondes; //valeur du temps
+
 	if (new == NULL)
 	    exit(EXIT_FAILURE);
-	    
+
 	if(bc == NULL){ //Si le nouveau bloc créé est le premier, l'id = 0
 		new->idBlock = 0;
 		new->next = NULL;
@@ -34,9 +39,17 @@ BlockChain ajouterBlock(BlockChain bc)
 	else {
 		new->idBlock = bc->idBlock + 1;
 		new->next = bc;
+
 	}
 	new->liste = NULL;
-	
+
+    secondes = time(NULL); //met la valeur a renvoyer dans temps equivalent a time(&secondes)
+    instant = localtime(&secondes);
+    new->date = instant;
+    printf("%d/%d a %d:%d:%d\n", instant->tm_mday, instant->tm_mon+1, instant->tm_hour, instant->tm_min, instant->tm_sec);
+    printf("%d/%d a %d:%d:%d\n", new->date->tm_mday, new->date->tm_mon+1);
+    bc=new;
+    printf("On est dans le bloc numero : %d(on est fin ajouterBlock)\n", bc->idBlock );
 	return new;
 }
 
@@ -72,11 +85,15 @@ float soldeEtudiant(int idEtu, BlockChain bc)
 
 void crediter(int idEtu, float montant, char *descr, BlockChain bc)
 {
-	if(bc == NULL || montant < 0){
-		printf("Erreur : montant à créditer inférieur à 0");
-		return;
-	}
-	bc->liste = ajouterTransaction(idEtu,montant,descr,bc->liste);
+    if (montant > 0)
+    {
+        printf("id block dans crediter de tp3.c : %d",bc->idBlock);
+        bc->liste = ajouterTransaction(idEtu,montant,descr,bc->liste);
+        printf("\nCredit de %.2f EATCoin effectue sur le compte etudiant num %d (bloc transaction num : %d).\n",bc->liste->montant, bc->liste->idEtu,bc->idBlock);
+    }
+	else
+		printf("Erreur : montant à crediter inférieur à 0");
+
 }
 
 

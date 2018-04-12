@@ -5,11 +5,8 @@ int main(){
 
     BlockChain bc = NULL;
 
-    int choix = 0;
-    int continuer = 0;
+    menu(bc);
 
-    choix = menu();
-    continuer = action(choix, bc);
 
 
     return 0;
