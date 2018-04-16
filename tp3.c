@@ -58,7 +58,7 @@ BlockChain ajouterBlock(BlockChain bc)
 
 float totalTransactionEtudiantBlock(int idEtu, T_Block b)
 {
-	int somme = 0;
+	float somme = 0;
 	T_Transaction* tmp;
 
 	tmp = b.liste;
@@ -93,6 +93,7 @@ void crediter(int idEtu, float montant, char *descr, BlockChain bc)
 	else
 		printf("Erreur : montant a crediter inferieur a 0.\n");
 
+
 }
 
 
@@ -105,7 +106,6 @@ int payer(int idEtu, float montant, char *descr, BlockChain bc)
 	if(soldeEtudiant(idEtu,bc) > montant){
         montant = montant *(-1);
 		bc->liste = ajouterTransaction(idEtu,montant,descr,bc->liste);
-		printf("Le repas a ete paye.\n");
 		return 1;
 	}
 	else
@@ -116,16 +116,20 @@ int payer(int idEtu, float montant, char *descr, BlockChain bc)
 
 void consulter(int idEtu, BlockChain bc)
 {
+    if (bc == NULL)
+    {
+        printf("\nLa BlockChain est vide.\n");
+        return;
+    }
     float solde;
     solde = soldeEtudiant(idEtu, bc);
     int trouve = 0 ;
     int i = 0;
     T_Transaction *ptr_t = NULL;
+    printf("Solde actuel : %.2f EATcoin.\n\n", solde);
 	while (bc != NULL)
     {
-        printf("----------HISTORIQUE DE L'ETUDIANT %d----------\n", idEtu);
-		ptr_t = bc->liste;
-        printf("Solde actuel : %.2f EATcoin.\n\n", solde);
+        ptr_t = bc->liste;
 		while(ptr_t != NULL && i < 5 ){
 			if (ptr_t->idEtu == idEtu){
                 printf("--Transactions du %d/%d/%d a %d:%d:%d--- \n", bc->date->tm_mday,bc->date->tm_mon+1, bc->date->tm_year+1900,bc->date->tm_hour, bc->date->tm_min, bc->date->tm_sec);
@@ -135,14 +139,12 @@ void consulter(int idEtu, BlockChain bc)
 				i++;
 				trouve = 1;
 			}
-
 			ptr_t = ptr_t->next;
-
-			if (trouve == 0)
-                printf("L'etudiant %d n'a pas fait de transaction.\n", idEtu);
 		}
 		bc = bc->next;
 	 }
+	 if (trouve == 0)
+                printf("L'etudiant %d n'a pas fait de transaction.\n", idEtu);
 
 }
 

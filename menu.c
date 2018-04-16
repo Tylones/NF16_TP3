@@ -37,13 +37,10 @@ void menu(BlockChain bc)
             break;
 
             case 4:
-                if (bc == NULL)
-                {
-                    printf("\nLa BlockChain est vide.\n");
-                    return;
-                }
+
                 printf("Pour quel etudiant voulez-vous afficher son historique ? \n");
                 scanf("%d", &idEtu);
+                printf("----------HISTORIQUE DE L'ETUDIANT %d----------\n", idEtu);
                 consulter(idEtu, bc);
             break;
 
@@ -227,13 +224,14 @@ void paiement(BlockChain bc)
     scanf("%s", descr);
     //printf("ici");
     result = payer(id,montant,descr,bc);
+    printf("Le repas a ete paye.\n");
 }
 
 int transferer(BlockChain bc)
 {
     int source, dest;
     float montant;
-    char *descr;
+    char *descr = malloc(strlen(descr)*sizeof(char));
     printf("Veuillez saisir l'id du compte Etu source.\n");
     scanf("%d", &source);
     printf("Veuillez saisir l'id du compte Etu destinataire.\n");
@@ -243,4 +241,5 @@ int transferer(BlockChain bc)
     printf("Veuillez saisir une description.\n");
     scanf("%s", descr);
     transfert(source,dest,montant,descr,bc);
+    printf("Le virement a un autre etudiant a ete fait.\n");
 }
