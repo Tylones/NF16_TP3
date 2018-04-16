@@ -58,7 +58,7 @@ BlockChain ajouterBlock(BlockChain bc)
 
 float totalTransactionEtudiantBlock(int idEtu, T_Block b)
 {
-	int somme = 0;
+	float somme = 0;
 	T_Transaction* tmp;
 
 	tmp = b.liste;
