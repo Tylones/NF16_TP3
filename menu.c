@@ -137,7 +137,7 @@ void afficherTrans_bloc(BlockChain bc){
 		return;
 	}
 	else{
-        printf("\n---Transactions du bloc %d---\n", bc->idBlock);
+		printf("\n---Transactions du bloc %d---\n", b->idBlock);
 		T_Transaction* tmp = b->liste;
 		while(tmp != NULL){
 			printf("	idEtu : %d \n", tmp->idEtu);

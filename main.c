@@ -4,7 +4,7 @@
 int main(){
 
     BlockChain bc = NULL;
-
+	bc = import();
     menu(bc);
 
 
