@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 
 
 typedef struct Transaction{
@@ -17,6 +18,7 @@ typedef struct Transaction{
 
 typedef struct Block{
 	int idBlock;
+	struct tm *date; //pas de pointeurs si on fait un remplissage manuel
 	T_Transaction *liste;
 	struct Block *next;
 }T_Block;

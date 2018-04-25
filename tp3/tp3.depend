@@ -1,0 +1,25 @@
+# depslib dependency file v1.0
+1523486292 source:c:\users\aurelie\desktop\gi02\nf16\tp\nf16_tp3\main.c
+	"tp3.h"
+	"menu.h"
+
+1523458684 c:\users\aurelie\desktop\gi02\nf16\tp\nf16_tp3\tp3.h
+	<stdlib.h>
+	<string.h>
+	<stdio.h>
+	<time.h>
+
+1523540004 c:\users\aurelie\desktop\gi02\nf16\tp\nf16_tp3\menu.h
+	"tp3.h"
+
+1523540791 source:c:\users\aurelie\desktop\gi02\nf16\tp\nf16_tp3\tp3.c
+	"tp3.h"
+
+1514144174 source:c:\users\aurelie\desktop\gi02\nf16\tp\nf16_tp3\tp3\main.c
+	<stdio.h>
+	<stdlib.h>
+
+1523540882 source:c:\users\aurelie\desktop\gi02\nf16\tp\nf16_tp3\menu.c
+	"menu.h"
+	"tp3.h"
+

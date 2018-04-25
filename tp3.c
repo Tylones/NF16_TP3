@@ -9,8 +9,8 @@ T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Trans
 	    exit(EXIT_FAILURE);
 	new->idEtu = idEtu;
 	new->montant = montant;
-	new->descr = malloc(100*sizeof(char));
-	if(!new->descr)
+	new->descr = malloc(strlen(descr)*sizeof(char));
+	if(new->descr==NULL)
 		exit(EXIT_FAILURE);
 	strcpy(new->descr, descr);
 	//new->descr = descr; il faut faire un strcpy,
@@ -23,10 +23,15 @@ T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Trans
 
 BlockChain ajouterBlock(BlockChain bc)
 {
+    //--------------A AJOUTER : date--------------
 	BlockChain new = malloc(sizeof(T_Block));
+
+	struct tm *instant;
+	time_t secondes; //valeur du temps
+
 	if (new == NULL)
 	    exit(EXIT_FAILURE);
-	    
+
 	if(bc == NULL){ //Si le nouveau bloc créé est le premier, l'id = 0
 		new->idBlock = 0;
 		new->next = NULL;
@@ -34,9 +39,17 @@ BlockChain ajouterBlock(BlockChain bc)
 	else {
 		new->idBlock = bc->idBlock + 1;
 		new->next = bc;
+
 	}
 	new->liste = NULL;
-	
+
+    secondes = time(NULL); //met la valeur a renvoyer dans temps equivalent a time(&secondes)
+    instant = localtime(&secondes);
+    new->date = instant;
+    //printf("%d/%d a %d:%d:%d\n", instant->tm_mday, instant->tm_mon+1, instant->tm_hour, instant->tm_min, instant->tm_sec);
+    //printf("%d/%d a %d:%d:%d\n", new->date->tm_mday, new->date->tm_mon+1);
+    bc=new;
+
 	return new;
 }
 
@@ -45,7 +58,7 @@ BlockChain ajouterBlock(BlockChain bc)
 
 float totalTransactionEtudiantBlock(int idEtu, T_Block b)
 {
-	int somme = 0;
+	float somme = 0;
 	T_Transaction* tmp;
 
 	tmp = b.liste;
@@ -72,11 +85,15 @@ float soldeEtudiant(int idEtu, BlockChain bc)
 
 void crediter(int idEtu, float montant, char *descr, BlockChain bc)
 {
-	if(bc == NULL || montant < 0){
-		printf("Erreur : montant à créditer inférieur à 0");
-		return;
-	}
-	bc->liste = ajouterTransaction(idEtu,montant,descr,bc->liste);
+    if (montant > 0)
+    {
+        bc->liste = ajouterTransaction(idEtu,montant,descr,bc->liste);
+        printf("\nCredit de %.2f EATCoin effectue sur le compte etudiant num %d le %d/%d/%d a %d:%d:%d (bloc transaction num : %d).\n",bc->liste->montant, bc->liste->idEtu,bc->date->tm_mday, bc->date->tm_mon+1,bc->date->tm_year+1900, bc->date->tm_hour, bc->date->tm_min, bc->date->tm_sec,bc->idBlock);
+    }
+	else
+		printf("Erreur : montant a crediter inferieur a 0.\n");
+
+
 }
 
 
@@ -84,43 +101,50 @@ void crediter(int idEtu, float montant, char *descr, BlockChain bc)
 int payer(int idEtu, float montant, char *descr, BlockChain bc)
 {
 	if(bc == NULL)
+
 		return 0;
-	if(soldeEtudiant(idEtu,bc) > montant){ // Comme le montant à payer va être représenté par une valeur négative (e.g. : -3.25€), on le multiplie par -1 pour pouvoir le comparer au solde
+	if(soldeEtudiant(idEtu,bc) > montant){
+        montant = montant *(-1);
 		bc->liste = ajouterTransaction(idEtu,montant,descr,bc->liste);
 		return 1;
 	}
+	else
+        printf("Solde insuffisant, veuillez recharger votre compte.\n");
 	return 0;
 }
 
 
 void consulter(int idEtu, BlockChain bc)
 {
-    soldeEtudiant(idEtu, bc);
-
+    if (bc == NULL)
+    {
+        printf("\nLa BlockChain est vide.\n");
+        return;
+    }
+    float solde;
+    solde = soldeEtudiant(idEtu, bc);
+    int trouve = 0 ;
     int i = 0;
     T_Transaction *ptr_t = NULL;
-	while (i != 5 && bc != NULL)
+    printf("Solde actuel : %.2f EATcoin.\n\n", solde);
+	while (bc != NULL)
     {
-        printf("----------Historique des 5 dernieres transaction de l'etu n°%d----------\n", idEtu);
-		ptr_t = bc->liste;
-
-		while(ptr_t != NULL){
+        ptr_t = bc->liste;
+		while(ptr_t != NULL && i < 5 ){
 			if (ptr_t->idEtu == idEtu){
-				printf("id du bloc de la %deme transaction est : %d\n",i, bc->idBlock);
-				printf("\tLa description de cette transaction est : %s", ptr_t->descr);
-				printf("\tLe montant de cette transaction est : %f", ptr_t->montant);
+                printf("--Transactions du %d/%d/%d a %d:%d:%d--- \n", bc->date->tm_mday,bc->date->tm_mon+1, bc->date->tm_year+1900,bc->date->tm_hour, bc->date->tm_min, bc->date->tm_sec);
+				printf("	id du bloc : %d\n", bc->idBlock);
+				printf("	Description : %s\n", ptr_t->descr);
+				printf("	Montant : %.2f EATCoin\n\n", ptr_t->montant);
 				i++;
+				trouve = 1;
 			}
-
 			ptr_t = ptr_t->next;
 		}
-
 		bc = bc->next;
 	 }
-
-
-	if(i < 5)
-		printf("L'étudiant à moins de 5 transactions"); //Afficher un message si l'étudiant à moins de 5 transactions ?
+	 if (trouve == 0)
+                printf("L'etudiant %d n'a pas fait de transaction.\n", idEtu);
 
 }
 
