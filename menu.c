@@ -76,11 +76,13 @@ void menu(BlockChain bc)
             break;
 
             case 9:
+				nettoyerFichier();
+				export(bc);
 
             break;
 
             case 10:
-
+			bc = import();
             break;
 
             default : printf("Choix incorrect. \n");
@@ -192,7 +194,7 @@ BlockChain credit(BlockChain bc)
     printf("\n---Credit---\n");
     printf("\nLe %d/%d/%d a %d:%d:%d\n", instant->tm_mday, instant->tm_mon+1,instant->tm_year, instant->tm_hour, instant->tm_min, instant->tm_sec);
 
-    if (bc == NULL || instant != bc->date){ //si bc est null OU si la date ne correspond pas a la date du bloc courant
+	if (bc == NULL || instant->tm_mday != bc->date->tm_mday || instant->tm_mon != bc->date->tm_mon || instant->tm_year-1900 != bc->date->tm_year){ //si bc est null OU si la date ne correspond pas a la date du bloc courant
         bc = ajouterBlock(bc);
     }
 
