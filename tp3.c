@@ -54,6 +54,27 @@ BlockChain ajouterBlock(BlockChain bc)
 }
 
 
+BlockChain ajouterBlock2(BlockChain bc, struct tm* date)
+{
+	BlockChain new = malloc(sizeof(T_Block));
+
+	if (new == NULL)
+		exit(EXIT_FAILURE);
+	if(bc == NULL){ //Si le nouveau bloc créé est le premier, l'id = 0
+		new->idBlock = 0;
+		new->next = NULL;
+	}
+	else {
+		new->idBlock = bc->idBlock + 1;
+		new->next = bc;
+
+	}
+	new->date = date;
+	new->liste = NULL;
+	bc=new;
+	return new;
+}
+
 
 
 float totalTransactionEtudiantBlock(int idEtu, T_Block b)
@@ -158,3 +179,50 @@ int transfert(int idSource, int idDestination, float montant, char *descr, Block
 	}
 	return 0;
 }
+
+void nettoyerFichier(){
+	remove("sauvegarde.txt");
+}
+
+
+
+void export(BlockChain bc) // Fonction récursive qui va faire en sorte que les blocks les plus anciens soient sauvegardés en premier dans le fichier
+{
+	if(bc != NULL){
+		export(bc->next);
+		FILE *fp = fopen("sauvegarde.txt","a");
+		T_Transaction *tmp = bc->liste;
+		while (tmp != NULL) {
+			fprintf(fp,"date(%d/%d/%d);%d;%f;%s\n", bc->date->tm_mday, bc->date->tm_mon+1, bc->date->tm_year+1900, tmp->idEtu, tmp->montant, tmp->descr);
+			tmp = tmp->next;
+		}
+		fclose(fp);
+	}
+}
+
+BlockChain import()
+{
+	BlockChain bc = NULL;
+	FILE *fp = fopen("sauvegarde.txt","r");
+	if(fp == NULL)
+		return NULL;
+	int DD,MM,YYYY,idEtu;
+	float montant;
+	char buff[255], descr[255];
+	struct tm* date;
+	while(!feof(fp) && fgets(buff,255,fp) != NULL && strcmp("\n",buff)){
+		sscanf(buff,"date(%d/%d/%d);%d;%f;%s",&DD,&MM,&YYYY,&idEtu,&montant,descr);
+		date = malloc(sizeof(struct tm));
+		date->tm_mday = DD;
+		date->tm_mon = MM-1;
+		date->tm_year = YYYY-1900;
+		if(bc == NULL || bc->date->tm_mday != date->tm_mday || bc->date->tm_mon != date->tm_mon || bc->date->tm_year != date->tm_year){ //Si la BlockChain est vide ou bien que la date de la transaction ne correspond pas à celle de premier block
+			bc = ajouterBlock2(bc,date);
+		}
+		bc->liste = ajouterTransaction(idEtu,montant,descr,bc->liste);
+	}
+
+	return bc;
+
+}
+
