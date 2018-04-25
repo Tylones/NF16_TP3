@@ -216,14 +216,14 @@ void paiement(BlockChain bc)
 {
     int id, result;
     float montant;
-    char *descr = malloc(strlen(descr)*sizeof(char));
+	char *descr = malloc(strlen(descr)*sizeof(char));
     printf("\n---Achat repas---\n");
     printf("Veuillez saisir l'identifiant de l'etudiant : ");
     scanf("%d", &id);
     printf("Veuillez saisir le montant a payer : ");
     scanf("%f", &montant);
     printf("Veuillez saisir le repas : ");
-    scanf("%s", descr);
+	scanf("%s", descr);
     //printf("ici");
     result = payer(id,montant,descr,bc);
     printf("Le repas a ete paye.\n");
@@ -233,15 +233,15 @@ int transferer(BlockChain bc)
 {
     int source, dest;
     float montant;
-    char *descr = malloc(strlen(descr)*sizeof(char));
+	char *descr = malloc(255*sizeof(char));
     printf("Veuillez saisir l'id du compte Etu source.\n");
     scanf("%d", &source);
     printf("Veuillez saisir l'id du compte Etu destinataire.\n");
     scanf("%d", &dest);
     printf("Veuillez saisir le montant de la transaction.\n");
     scanf("%f", &montant);
-    printf("Veuillez saisir une description.\n");
-    scanf("%s", descr);
+	printf("Veuillez saisir une description.\n");
+	scanf("%s", descr);
     transfert(source,dest,montant,descr,bc);
     printf("Le virement a un autre etudiant a ete fait.\n");
 }
