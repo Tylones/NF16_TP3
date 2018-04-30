@@ -126,7 +126,7 @@ void afficherTrans_bloc(BlockChain bc){
     }
 
 	printf("Quel bloc voulez vous afficher (saisir id) ? \n");
-	scanf("%d",&id);
+	id = readInt();
 
 	while(b != NULL && b->idBlock != id){
 		b = b->next;
@@ -162,7 +162,7 @@ void afficherTransEtu_jour(BlockChain bc){
 
 	T_Transaction* tmp = bc ->liste;
 	printf("Veuillez saisir l'identifiant de l'etudiant : ");
-	scanf("%d",&id);
+	id = readInt();
     printf("\n--Transactions du %d/%d/%d de l'etudiant %d--- \n", bc->date->tm_mday,bc->date->tm_mon+1, bc->date->tm_year+1900,id);
 	while(tmp != NULL){
 
@@ -199,9 +199,9 @@ BlockChain credit(BlockChain bc)
     }
 
     printf("Veuillez saisir l'identifiant de l'etudiant : ");
-    scanf("%d", &id);
+	id = readInt();
     printf("Veuillez saisir le montant a crediter : ");
-    scanf("%f", &montant);
+	montant = readFloat();
     //printf("ici");
     //printf("id bloc avant crediter : %d", bc->idBlock);
     crediter(id, montant, "Credit", bc);
@@ -219,9 +219,9 @@ void paiement(BlockChain bc)
 	char *descr = malloc(strlen(descr)*sizeof(char));
     printf("\n---Achat repas---\n");
     printf("Veuillez saisir l'identifiant de l'etudiant : ");
-    scanf("%d", &id);
+	id = readInt();
     printf("Veuillez saisir le montant a payer : ");
-    scanf("%f", &montant);
+	montant = readFloat();
     printf("Veuillez saisir le repas : ");
 	scanf("%s", descr);
     //printf("ici");
@@ -235,13 +235,38 @@ int transferer(BlockChain bc)
     float montant;
 	char *descr = malloc(255*sizeof(char));
     printf("Veuillez saisir l'id du compte Etu source.\n");
-    scanf("%d", &source);
+	source = readInt();
     printf("Veuillez saisir l'id du compte Etu destinataire.\n");
-    scanf("%d", &dest);
+	dest = readInt();
     printf("Veuillez saisir le montant de la transaction.\n");
-    scanf("%f", &montant);
+	montant = readFloat();
 	printf("Veuillez saisir une description.\n");
 	scanf("%s", descr);
     transfert(source,dest,montant,descr,bc);
     printf("Le virement a un autre etudiant a ete fait.\n");
+}
+
+int readInt()
+{
+	int a;
+	while(scanf("%d", &a) != 1) {
+		printf("Entrée invalide\n");
+		clean_stdin();
+	}
+	return a;
+}
+
+float readFloat(){
+	float a;
+	while (scanf("%f",&a) != 1){
+		printf("Entrée invalide");
+		clean_stdin();
+	}
+	return a;
+}
+
+int clean_stdin()
+{
+	while (getchar()!='\n');
+	return 1;
 }
