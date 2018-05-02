@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <time.h>
 
-
 typedef struct Transaction{
 	int idEtu;
 	float montant;

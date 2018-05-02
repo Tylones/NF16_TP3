@@ -1,5 +1,5 @@
-#include "menu.h"
 #include "tp3.h"
+#include "menu.h"
 
 
 void menu(BlockChain bc)
@@ -20,7 +20,8 @@ void menu(BlockChain bc)
 		printf("8. Quitter\n");
         printf("9. Exporter toutes les transactions vers un fichier\n\n");
 
-		scanf("%d", &choix);
+		//scanf("%d", &choix);
+		choix = readInt();
 
         switch(choix)
         {
@@ -82,7 +83,7 @@ void menu(BlockChain bc)
             break;
 
             case 10:
-			bc = import();
+                bc = import();
             break;
 
             default : printf("Choix incorrect. \n");
@@ -107,7 +108,7 @@ void afficherBlocs(BlockChain bc)
 	BlockChain ptr = bc;
     printf("\n---Affichage de la liste des blocs que contient la BlockChain---\n");
 	while(ptr != NULL){
-		printf("\nBlock numero : %d (le %d/%d/%d) \n", ptr->idBlock, ptr->date->tm_mday, ptr->date->tm_mon+1, ptr->date->tm_year+1900);
+		printf("\nBlock numero : %d (le %d/%d/%d) \n", ptr->idBlock, ptr->date->tm_mday, ptr->date->tm_mon+1, ptr->date->tm_year-1900);
         ptr = ptr->next;
 
 	}
@@ -194,7 +195,7 @@ BlockChain credit(BlockChain bc)
     printf("\n---Credit---\n");
     printf("\nLe %d/%d/%d a %d:%d:%d\n", instant->tm_mday, instant->tm_mon+1,instant->tm_year, instant->tm_hour, instant->tm_min, instant->tm_sec);
 
-	if (bc == NULL || instant->tm_mday != bc->date->tm_mday || instant->tm_mon != bc->date->tm_mon || instant->tm_year-1900 != bc->date->tm_year){ //si bc est null OU si la date ne correspond pas a la date du bloc courant
+	if (bc == NULL || instant->tm_mday != bc->date->tm_mday || instant->tm_mon != bc->date->tm_mon || instant->tm_year != bc->date->tm_year){ //si bc est null OU si la date ne correspond pas a la date du bloc courant
         bc = ajouterBlock(bc);
     }
 
@@ -226,7 +227,8 @@ void paiement(BlockChain bc)
 	scanf("%s", descr);
     //printf("ici");
     result = payer(id,montant,descr,bc);
-    printf("Le repas a ete paye.\n");
+    if (result == 1)
+        printf("Le repas a ete paye.\n");
 }
 
 int transferer(BlockChain bc)

@@ -1,5 +1,5 @@
 #include "tp3.h"
-
+#include "menu.h"
 
 T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Transaction *listeTransaction)
 {
@@ -23,7 +23,7 @@ T_Transaction *ajouterTransaction(int idEtu, float montant, char *descr, T_Trans
 
 BlockChain ajouterBlock(BlockChain bc)
 {
-    //--------------A AJOUTER : date--------------
+
 	BlockChain new = malloc(sizeof(T_Block));
 
 	struct tm *instant;
@@ -48,7 +48,7 @@ BlockChain ajouterBlock(BlockChain bc)
     new->date = instant;
     //printf("%d/%d a %d:%d:%d\n", instant->tm_mday, instant->tm_mon+1, instant->tm_hour, instant->tm_min, instant->tm_sec);
     //printf("%d/%d a %d:%d:%d\n", new->date->tm_mday, new->date->tm_mon+1);
-    bc=new;
+   // bc=new;
 
 	return new;
 }
@@ -112,7 +112,7 @@ void crediter(int idEtu, float montant, char *descr, BlockChain bc)
         printf("\nCredit de %.2f EATCoin effectue sur le compte etudiant num %d le %d/%d/%d a %d:%d:%d (bloc transaction num : %d).\n",bc->liste->montant, bc->liste->idEtu,bc->date->tm_mday, bc->date->tm_mon+1,bc->date->tm_year+1900, bc->date->tm_hour, bc->date->tm_min, bc->date->tm_sec,bc->idBlock);
     }
 	else
-		printf("Erreur : montant a crediter inferieur a 0.\n");
+		printf("Erreur : montant a crediter inferieur a 0 ou nul.\n");
 
 
 }
