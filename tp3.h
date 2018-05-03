@@ -13,11 +13,9 @@ typedef struct Transaction{
 }T_Transaction;
 
 
-
-
 typedef struct Block{
 	int idBlock;
-	struct tm *date; //pas de pointeurs si on fait un remplissage manuel
+	struct tm *date;
 	T_Transaction *liste;
 	struct Block *next;
 }T_Block;

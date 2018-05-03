@@ -40,7 +40,7 @@ void menu(BlockChain bc)
             case 4:
 
                 printf("Pour quel etudiant voulez-vous afficher son historique ? \n");
-                scanf("%d", &idEtu);
+				idEtu = readInt();
                 printf("----------HISTORIQUE DE L'ETUDIANT %d----------\n", idEtu);
                 consulter(idEtu, bc);
             break;
@@ -91,7 +91,7 @@ void menu(BlockChain bc)
         }
 
     }
-    return 1;
+	return;
 
 }
 
