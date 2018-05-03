@@ -83,7 +83,6 @@ void menu(BlockChain bc)
             break;
 
             case 10:
-                bc = import();
             break;
 
             default : printf("Choix incorrect. \n");
@@ -108,7 +107,7 @@ void afficherBlocs(BlockChain bc)
 	BlockChain ptr = bc;
     printf("\n---Affichage de la liste des blocs que contient la BlockChain---\n");
 	while(ptr != NULL){
-		printf("\nBlock numero : %d (le %d/%d/%d) \n", ptr->idBlock, ptr->date->tm_mday, ptr->date->tm_mon+1, ptr->date->tm_year-1900);
+		printf("\nBlock numero : %d (le %d/%d/%d) \n", ptr->idBlock, ptr->date->tm_mday, ptr->date->tm_mon+1, ptr->date->tm_year+1900);
         ptr = ptr->next;
 
 	}
@@ -154,6 +153,8 @@ void afficherTrans_bloc(BlockChain bc){
 void afficherTransEtu_jour(BlockChain bc){
 	int id;
 	int trouve = 0 ;
+	time_t secondes;
+	struct tm *instant;
 
 	if (bc == NULL)
     {
@@ -164,7 +165,17 @@ void afficherTransEtu_jour(BlockChain bc){
 	T_Transaction* tmp = bc ->liste;
 	printf("Veuillez saisir l'identifiant de l'etudiant : ");
 	id = readInt();
+
+	secondes = time(NULL); //met la valeur a renvoyer dans temps equivalent a time(&secondes)
+	instant = localtime(&secondes);
+
+	if(instant->tm_mday != bc->date->tm_mday || instant->tm_mon != bc->date->tm_mon || instant->tm_year != bc->date->tm_year){
+		printf("Il n'y a pas eu de transaction aujourd'hui \n");
+		return;
+	}
+
     printf("\n--Transactions du %d/%d/%d de l'etudiant %d--- \n", bc->date->tm_mday,bc->date->tm_mon+1, bc->date->tm_year+1900,id);
+
 	while(tmp != NULL){
 
         if(tmp->idEtu == id){
@@ -191,9 +202,8 @@ BlockChain credit(BlockChain bc)
     //on recupere la date du jour
     secondes = time(NULL); //met la valeur a renvoyer dans temps equivalent a time(&secondes)
     instant = localtime(&secondes);
-    instant->tm_year += 1900;
     printf("\n---Credit---\n");
-    printf("\nLe %d/%d/%d a %d:%d:%d\n", instant->tm_mday, instant->tm_mon+1,instant->tm_year, instant->tm_hour, instant->tm_min, instant->tm_sec);
+	printf("\nLe %d/%d/%d a %d:%d:%d\n", instant->tm_mday, instant->tm_mon+1,instant->tm_year+1900, instant->tm_hour, instant->tm_min, instant->tm_sec);
 
 	if (bc == NULL || instant->tm_mday != bc->date->tm_mday || instant->tm_mon != bc->date->tm_mon || instant->tm_year != bc->date->tm_year){ //si bc est null OU si la date ne correspond pas a la date du bloc courant
         bc = ajouterBlock(bc);
@@ -244,8 +254,9 @@ int transferer(BlockChain bc)
 	montant = readFloat();
 	printf("Veuillez saisir une description.\n");
 	scanf("%s", descr);
-    transfert(source,dest,montant,descr,bc);
-    printf("Le virement a un autre etudiant a ete fait.\n");
+	if(transfert(source,dest,montant,descr,bc) == 1) {
+		printf("Le virement a un autre etudiant a ete fait.\n");
+	}
 }
 
 int readInt()
